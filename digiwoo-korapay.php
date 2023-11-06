@@ -49,7 +49,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
 
                 // Save settings.
-                add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'korapay_process_admin_options'));
+                add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
                 add_action( 'woocommerce_api_digiwoo_korapay_ipn', array( $this, 'korapay_check_for_ipn_response' ) );
             }
 
