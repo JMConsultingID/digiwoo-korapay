@@ -126,7 +126,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             public function process_payment( $order_id ) {
                 $log_data = korapay_get_logger();               
-                
+                $order = wc_get_order( $order_id );
 
                 // Get the billing information
                 $billing_name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
