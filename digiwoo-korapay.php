@@ -136,12 +136,24 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $billing_city = $order->get_billing_city();
                 $billing_post_code = $order->get_billing_postcode();
 
+                // Generate a unique reference for the transaction
+                // For example, using the order ID with a prefix/suffix or using a unique hash
+                $transaction_reference = 'ORD-' . $order_id;
+
+                // Ensure the transaction reference is at least 5 characters
+                if (strlen($transaction_reference) < 5) {
+                    // Handle the error appropriately, maybe log it or inform the user
+                    // For this example, let's just extend the reference with padding
+                    $transaction_reference = str_pad($transaction_reference, 5, "0", STR_PAD_LEFT);
+                }
+
+
                 // Prepare the payload
                 $payload = array(
                     "amount" => $order->get_total(),
                     "redirect_url" => $this->get_return_url( $order ),
                     "currency" => get_woocommerce_currency(),
-                    "reference" => $order->get_order_number(),
+                    "reference" => $transaction_reference,
                     "narration" => "Payment for Order #" . $order->get_order_number(),
                     "channels" => array(
                         "card",
@@ -262,13 +274,29 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             }
 
             private function get_order_id_by_transaction_reference( $transaction_reference ) {
-                // You need to implement this method to retrieve the order ID based on the transaction reference
-                // This typically involves querying the post_meta table where you stored the transaction reference upon initializing the payment
-                // Placeholder: return the order ID that corresponds to the provided transaction reference
-                return $order_id;
+                // You'd typically search the post meta table for the reference
+                global $wpdb;
+                
+                // This SQL will search the postmeta table for the reference and return the associated post ID (Order ID)
+                $query = $wpdb->prepare( "
+                    SELECT post_id 
+                    FROM $wpdb->postmeta 
+                    WHERE meta_key = '_transaction_reference' 
+                    AND meta_value = %s
+                ", $transaction_reference );
+                
+                // Execute the query
+                $order_id = $wpdb->get_var( $query );
+                
+                // Check if an order ID was found
+                if( $order_id ) {
+                    return $order_id;
+                } else {
+                    // No order found with this transaction reference, handle as appropriate
+                    // Maybe log this as an error, or send an alert
+                    return null;
+                }
             }
-
-
 
         } //End of class WC_KORAPAY_PAYMENT
 
