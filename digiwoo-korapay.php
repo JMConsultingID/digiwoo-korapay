@@ -89,10 +89,18 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     ),
 
                 ); // End Of form_fields
-                
+
             } // End Of public function init_form_fields
 
-        } //End of class WC_KORAPAY_PAYMENT 
+        } //End of class WC_KORAPAY_PAYMENT
+
+        // Add the gateway to WooCommerce
+        add_filter('woocommerce_payment_gateways', 'add_digiwoo_korapay_gateway');
+
+        function add_digiwoo_korapay_gateway($methods) {
+            $methods[] = 'WC_KORAPAY_PAYMENT';
+            return $methods;
+        }
 
     } // End of function digiwoo_korapay_init
 } // End of apply_filters
