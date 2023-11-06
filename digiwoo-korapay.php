@@ -32,7 +32,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $this->icon = ''; // URL to an icon for this method.
                 $this->has_fields = false;
                 $this->method_title = 'Digiwoo Korapay';
-                $this->method_description = 'Accept payments via Korapay API.';
+                $this->method_description = 'Korapay provides a payment platform that enables local and global businesses accept and disburse payments quickly and seamlessly while saving time and money using either bank transfers or credit card payments, Sign up on korapay.com to get your API keys.';
 
                 // Load the settings.
                 $this->init_form_fields();
@@ -61,6 +61,13 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         'type'        => 'text',
                         'description' => __('This controls the title the user sees during checkout.', 'digiwoo_korapay'),
                         'default'     => __('Korapay', 'digiwoo_korapay'),
+                        'desc_tip'    => true,
+                    ), 
+                    'description' => array(
+                        'title'       => __('Description', 'digiwoo_korapay'),
+                        'type'        => 'textarea',
+                        'description' => __('This controls the payment method description which the user sees during checkout.', 'digiwoo_korapay'),
+                        'default'     => __('This controls the payment method description which the user sees during checkout.', 'digiwoo_korapay'),
                         'desc_tip'    => true,
                     ),                    
                     'live_public_key' => array(
