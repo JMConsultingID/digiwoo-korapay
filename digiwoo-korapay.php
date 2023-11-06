@@ -69,7 +69,13 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         'description' => __('This controls the payment method description which the user sees during checkout.', 'digiwoo_korapay'),
                         'default'     => __('This controls the payment method description which the user sees during checkout.', 'digiwoo_korapay'),
                         'desc_tip'    => true,
-                    ),                    
+                    ),
+                    'enabled_live' => array(
+                        'title'   => __('Enable/Disable Live Version', 'digiwoo_korapay'),
+                        'type'    => 'checkbox',
+                        'label'   => __('Enable Live Version', 'digiwoo_korapay'),
+                        'default' => 'no'
+                    ),                
                     'live_public_key' => array(
                         'title'       => __('Live Public Key', 'digiwoo_korapay'),
                         'type'        => 'text',
@@ -78,6 +84,20 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         'desc_tip'    => true,
                     ),
                     'live_secret_key' => array(
+                        'title'       => __('Live Secret Key', 'digiwoo_korapay'),
+                        'type'        => 'text',
+                        'description' => __('This is the live secret key provided by Korapay', 'digiwoo_korapay'),
+                        'default'     => '',
+                        'desc_tip'    => true,
+                    ),
+                    'test_public_key' => array(
+                        'title'       => __('Live Public Key', 'digiwoo_korapay'),
+                        'type'        => 'text',
+                        'description' => __('This is the live public key provided by Korapay', 'digiwoo_korapay'),
+                        'default'     => '',
+                        'desc_tip'    => true,
+                    ),
+                    'test_secret_key' => array(
                         'title'       => __('Live Secret Key', 'digiwoo_korapay'),
                         'type'        => 'text',
                         'description' => __('This is the live secret key provided by Korapay', 'digiwoo_korapay'),
