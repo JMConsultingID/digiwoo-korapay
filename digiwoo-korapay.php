@@ -46,6 +46,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $this->enabled      = $this->get_option( 'enabled' );
                 $this->livemode     = 'yes' === $this->get_option( 'livemode' );
                 $this->secret_key  = $this->livemode ? $this->get_option( 'live_secret_key' ) : $this->get_option( 'test_secret_key' );
+                $this->default_currency = $this->get_option('default_currency');
 
 
                 // Save settings.
@@ -154,6 +155,17 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $billing_city = $order->get_billing_city();
                 $billing_post_code = $order->get_billing_postcode();
 
+                $total_order = $order->get_total(); // The total amount of the order in USD.
+        
+                // Here you would get the current USD to NGN exchange rate.
+                // For this example, let's assume you have a function that retrieves this rate.
+                $exchange_rate = $this->get_usd_to_ngn_rate();
+
+                $total_order_exchange = $total_order * $exchange_rate;
+
+                $grand_total_order = $total_order_exchange * 100;
+
+
                 // Generate a unique reference for the transaction
                 // For example, using the order ID with a prefix/suffix or using a unique hash
                 $transaction_reference = 'ORD-' . $order_id;
@@ -168,9 +180,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                 // Prepare the payload
                 $payload = array(
-                    "amount" => $order->get_total(),
+                    "amount" => $grand_total_order,
                     "redirect_url" => $this->get_return_url( $order ),
-                    "currency" => get_woocommerce_currency(),
+                    "currency" => $this->default_currency,
                     "reference" => $transaction_reference,
                     "narration" => "Payment for Order #" . $order->get_order_number(),
                     "channels" => array(
@@ -275,6 +287,14 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                 // Whatever the response, you need to return 200 OK to Korapay to acknowledge receipt of the notification
                 wp_send_json_success();
+            }
+
+            private function get_usd_to_ngn_rate() {
+                // You might have stored the exchange rate in the WP options table,
+                // or you may need to query an external service to get the latest rate.
+                // For this example, let's say you have it stored as an option.
+                $rate = get_option('rate_default_currency', 800); // Default to 380 or another sensible default.
+                return $rate;
             }
 
             private function validate_webhook_response( $response, $order ) {
