@@ -75,6 +75,24 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         'default'     => __('This controls the payment method description which the user sees during checkout.', 'digiwoo_korapay'),
                         'desc_tip'    => true,
                     ),
+                    'default_currency' => array(
+                        'title'       => __('Currency', 'digiwoo_korapay'),
+                        'type'        => 'select',
+                        'description' => __('Choose the currency for the transactions.', 'digiwoo_korapay'),
+                        'default'     => 'NGN',
+                        'options'     => array(
+                          'NGN' => __('Nigerian Naira (NGN)', 'digiwoo_korapay'),
+                          'GHS' => __('Ghanaian Cedi (GHS)', 'digiwoo_korapay'),
+                          'KES' => __('Kenyan Shilling (KES)', 'digiwoo_korapay')
+                        ),
+                    ),
+                    'rate_default_currency' => array(
+                        'title'       => __('Rate: 1 USD to Default Currency', 'digiwoo_korapay'),
+                        'type'        => 'text',
+                        'description' => __('Enter the conversion rate for 1 USD to Nigerian Naira (NGN) or Ghanaian Cedi (GHS), or Kenyan Shilling (KES)', 'digiwoo_korapay'),
+                        'default'     => '800,00',  // Example default value. You can set it to a more accurate or recent rate.
+                        'desc_tip'    => true,
+                    ),
                     'livemode' => array(
                         'title'   => __('Enable/Disable Live Version', 'digiwoo_korapay'),
                         'type'    => 'checkbox',
