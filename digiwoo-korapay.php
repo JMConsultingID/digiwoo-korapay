@@ -177,6 +177,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $transaction_reference = str_pad($transaction_reference, 5, "0", STR_PAD_LEFT);
                 }
 
+                $webhook_url = add_query_arg( 'wc-api', 'digiwoo_korapay_ipn', home_url( '/' ) );
+
 
                 // Prepare the payload
                 $payload = array(
@@ -194,10 +196,10 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         "name" => $billing_name,
                         "email" => $billing_email,
                     ),
-                    "notification_url" => add_query_arg( 'wc-api', 'digiwoo_korapay_ipn', home_url( '/' ) ),
+                    "notification_url" => $webhook_url,
                     "metadata" => array(
                         "order_id" => $order->get_id(),
-                        "webhook_url" => add_query_arg( 'wc-api', 'digiwoo_korapay_ipn', home_url( '/' ) ),
+                        "total_order" => $total_order,
                         "billing_country" => $billing_country,
                         "billing_state" => $billing_state,                        
                         "billing_post_code" => $billing_post_code,
@@ -228,6 +230,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 if ( isset( $body['status'] ) && $body['status'] && isset( $body['data']['checkout_url'] ) ) {
                     // Mark as on-hold (we're awaiting the payment)
                     $order->update_status( 'on-hold', __( 'Awaiting payment', 'woocommerce' ) );
+                    update_post_meta($order_id, 'korapay_webhook_url', $webhook_url); 
 
                     // Reduce stock levels
                     wc_reduce_stock_levels( $order_id );
