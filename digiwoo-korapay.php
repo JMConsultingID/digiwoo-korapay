@@ -292,7 +292,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 }
 
                 // Whatever the response, you need to return 200 OK to Korapay to acknowledge receipt of the notification
-                wp_send_json_success();
+                status_header(200);
+                exit('OK');
             }
 
             private function get_usd_to_ngn_rate() {
