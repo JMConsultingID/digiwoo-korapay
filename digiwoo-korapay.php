@@ -197,9 +197,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     "notification_url" => add_query_arg( 'wc-api', 'digiwoo_korapay_ipn', home_url( '/' ) ),
                     "metadata" => array(
                         "order_id" => $order->get_id(),
+                        "webhook_url" => add_query_arg( 'wc-api', 'digiwoo_korapay_ipn', home_url( '/' ) ),
                         "billing_country" => $billing_country,
-                        "billing_state" => $billing_state,
-                        "billing_city" => $billing_city,
+                        "billing_state" => $billing_state,                        
                         "billing_post_code" => $billing_post_code,
                     ),
                 );
@@ -251,6 +251,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             } // End Of public function process_payment
 
            public function korapay_check_for_ipn_response() {
+                global $woocommerce;
                 $log_data = korapay_get_logger(); 
                 // Get the global WP object to access HTTP POST data
                 $json_post_data = file_get_contents('php://input');
