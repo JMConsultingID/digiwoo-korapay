@@ -279,20 +279,27 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                             $order->payment_complete();
                             $order->add_order_note( 'Korapay payment successful. Reference: ' . $transaction_reference );
                             // You may want to add additional meta or perform other actions based on the payment method, etc.
-                            update_post_meta($order_id, 'korapay_webhook_url', $webhook_url); 
+                            update_post_meta($order_id, 'korapay_response_status', $response['data']['status']);
+                            update_post_meta($order_id, 'korapay_response_reference', $response['data']['reference']);
                             $log_data['logger']->info('order status  : completed, Payment confirmed via IPN',  $log_data['context']);
                         } else {
                             // Handle payment failure
                             $order->update_status('pending', __( 'Payment failed or was declined', 'woocommerce' ));
+                            update_post_meta($order_id, 'korapay_response_status', $response['data']['status']);
+                            update_post_meta($order_id, 'korapay_response_reference', $response['data']['reference']);
                             $log_data['logger']->error('order status  : failed, Payment not confirmed via IPN : Payment failed or was declined.',  $log_data['context']);
                         }
                     } else {
                         $order->update_status('failed', __( 'Payment failed or was declined', 'woocommerce' ));
+                        update_post_meta($order_id, 'korapay_response_status', $response['data']['status']);
+                        update_post_meta($order_id, 'korapay_response_reference', $response['data']['reference']);
                         // Log for invalid order or failed validation
                          $log_data['logger']->error('order status  : failed, Payment not confirmed via IPN : invalid order or failed validation.',  $log_data['context']);
                     }
                 } else {
                     // Log for invalid event type or missing data
+                    update_post_meta($order_id, 'korapay_response_status', 'failed event status');
+                    update_post_meta($order_id, 'korapay_response_reference', 'failed event status');
                      $log_data['logger']->error('order status  : failed, Payment not confirmed via IPN : invalid event type or missing data.',  $log_data['context']);
                 }
 
