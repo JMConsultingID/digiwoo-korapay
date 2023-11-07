@@ -298,8 +298,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     }
                 } else {
                     // Log for invalid event type or missing data
-                    update_post_meta($order_id, 'korapay_response_status', 'failed event status');
-                    update_post_meta($order_id, 'korapay_response_reference', 'failed event status');
                      $log_data['logger']->error('order status  : failed, Payment not confirmed via IPN : invalid event type or missing data.',  $log_data['context']);
                 }
 
