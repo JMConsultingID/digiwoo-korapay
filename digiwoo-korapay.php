@@ -163,7 +163,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                 $total_order_exchange = $total_order * $exchange_rate;
 
-                $grand_total_order = $total_order_exchange * 100;
+                $grand_total_order = $total_order_exchange;
 
 
                 // Generate a unique reference for the transaction
