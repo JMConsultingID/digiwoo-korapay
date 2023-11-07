@@ -266,6 +266,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     // Retrieve the order by the transaction reference. Here you may need to match this with the order ID/metadata you saved earlier.
                     $order_id = $this->get_order_id_by_transaction_reference( $transaction_reference );
                     $order = wc_get_order( $order_id );
+                    $log_data['logger']->info('order_id  : '.$order_id,  $log_data['context']);
 
                     if ( $order && $this->validate_webhook_response( $response, $order ) ) {
                         // Check the payment status and update the order accordingly
@@ -274,15 +275,20 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                             $order->payment_complete();
                             $order->add_order_note( 'Korapay payment successful. Reference: ' . $transaction_reference );
                             // You may want to add additional meta or perform other actions based on the payment method, etc.
+                            $log_data['logger']->info('order status  : completed, Payment confirmed via IPN',  $log_data['context']);
                         } else {
                             // Handle payment failure
-                            $order->update_status('failed', __( 'Payment failed or was declined', 'woocommerce' ));
+                            $order->update_status('pending', __( 'Payment failed or was declined', 'woocommerce' ));
+                            $log_data['logger']->error('order status  : failed, Payment not confirmed via IPN : Payment failed or was declined.',  $log_data['context']);
                         }
                     } else {
+                        $order->update_status('failed', __( 'Payment failed or was declined', 'woocommerce' ));
                         // Log for invalid order or failed validation
+                         $log_data['logger']->error('order status  : failed, Payment not confirmed via IPN : invalid order or failed validation.',  $log_data['context']);
                     }
                 } else {
                     // Log for invalid event type or missing data
+                     $log_data['logger']->error('order status  : failed, Payment not confirmed via IPN : invalid event type or missing data.',  $log_data['context']);
                 }
 
                 // Whatever the response, you need to return 200 OK to Korapay to acknowledge receipt of the notification
