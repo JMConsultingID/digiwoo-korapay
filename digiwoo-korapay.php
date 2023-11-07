@@ -272,13 +272,14 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $order = wc_get_order( $order_id );
                     $log_data['logger']->info('order_id  : '.$order_id,  $log_data['context']);
 
-                    if ( $order && $this->validate_webhook_response( $response, $order ) ) {
+                    if ( !empty($order) ) {
                         // Check the payment status and update the order accordingly
                         if ( $response['data']['status'] === 'success' ) {
                             // Mark the order as completed
                             $order->payment_complete();
                             $order->add_order_note( 'Korapay payment successful. Reference: ' . $transaction_reference );
                             // You may want to add additional meta or perform other actions based on the payment method, etc.
+                            update_post_meta($order_id, 'korapay_webhook_url', $webhook_url); 
                             $log_data['logger']->info('order status  : completed, Payment confirmed via IPN',  $log_data['context']);
                         } else {
                             // Handle payment failure
@@ -315,7 +316,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 // Return true if valid, false otherwise
 
                 // Example validation
-                if ( $order->get_total() == $response['data']['amount'] / 100 && $order->get_currency() == $response['data']['currency'] ) {
+                if ( $order->get_total() == $response['data']['metadata']['total_order']) {
                     return true;
                 }
 
@@ -323,28 +324,26 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             }
 
             private function get_order_id_by_transaction_reference( $transaction_reference ) {
-                // You'd typically search the post meta table for the reference
-                global $wpdb;
-                
-                // This SQL will search the postmeta table for the reference and return the associated post ID (Order ID)
-                $query = $wpdb->prepare( "
-                    SELECT post_id 
-                    FROM $wpdb->postmeta 
-                    WHERE meta_key = '_transaction_reference' 
-                    AND meta_value = %s
-                ", $transaction_reference );
-                
-                // Execute the query
-                $order_id = $wpdb->get_var( $query );
-                
-                // Check if an order ID was found
-                if( $order_id ) {
-                    return $order_id;
-                } else {
-                    // No order found with this transaction reference, handle as appropriate
-                    // Maybe log this as an error, or send an alert
-                    return null;
+                // Assuming your reference is always in the format 'ORD-123'
+                // and you need to extract the numeric part (123 in this case)
+
+                // Remove the 'ORD-' part to get the numeric ID
+                $order_id = str_replace('ORD-', '', $transaction_reference);
+
+                // Check if the remaining string is an integer
+                if (is_numeric($order_id)) {
+                    $order_id = intval($order_id); // Convert it to an integer
+                    
+                    // Now you have the order ID, you can check if the order actually exists
+                    $order = wc_get_order($order_id);
+                    if ($order) {
+                        // The order exists
+                        return $order_id;
+                    }
                 }
+                
+                // Return null if no valid order is found
+                return null;
             }
 
         } //End of class WC_KORAPAY_PAYMENT
